@@ -31,4 +31,3 @@ La medición y comunicación de esta aplicación tienen fines de coordinación c
 ## Recursos de marca
 
 Los recursos oficiales del icono SVG están en `app/src/main/assets/brand/`. La tipografía Poppins se distribuye bajo la licencia OFL incluida en esa misma carpeta.
-

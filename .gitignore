@@ -1,0 +1,7 @@
+.gradle/
+**/build/
+local.properties
+.gradle-bootstrap/
+.kotlin/
+/*.png
+/*.log
