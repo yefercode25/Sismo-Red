@@ -53,7 +53,7 @@ internal fun HistoryScreen(
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             LucideIcon(LucideR.drawable.lucide_ic_database, Muted, Modifier.size(14.dp))
-            Text("${state.sessions.size} SESIÓN${if (state.sessions.size == 1) "" else "ES"}", fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = Muted, letterSpacing = 0.7.sp)
+            Text("${state.sessions.size} ${if (state.sessions.size == 1) "SESIÓN" else "SESIONES"}", fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = Muted, letterSpacing = 0.7.sp)
         }
         if (state.sessions.isEmpty()) {
             Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = PanelShape, border = BorderStroke(1.dp, Rule)) {

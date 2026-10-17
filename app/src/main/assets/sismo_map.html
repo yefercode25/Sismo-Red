@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    html, body { width: 100%; height: 100%; min-height: 100vh; margin: 0; background: #e6ece8; }
+    #map { position: absolute; inset: 0; width: 100%; height: 100vh; min-height: 100vh; background: #e6ece8; }
+    .leaflet-container { font-family: Arial, sans-serif; }
+    .station-marker { width: 18px; height: 18px; border: 3px solid #fff; border-radius: 50% 50% 50% 2px; background: #087f73; box-shadow: 0 1px 5px #18324a66; transform: rotate(-45deg); }
+    .station-marker.receiver { background: #315fa6; }
+    .leaflet-control-attribution { font-size: 10px !important; }
+  </style>
+</head>
+<body>
+  <div id="map" aria-label="Mapa de estaciones SismoRed"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map', { zoomControl: false, attributionControl: true }).setView([4.85, -73.52], 9);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      minZoom: 6,
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+    }).addTo(map);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    const markersLayer = L.layerGroup().addTo(map);
+    let previousMarkers = '';
+
+    window.renderSismoMap = function(markers) {
+      const signature = JSON.stringify(markers);
+      markersLayer.clearLayers();
+      const bounds = [];
+      markers.forEach((item) => {
+        if (typeof item.latitude !== 'number' || typeof item.longitude !== 'number') return;
+        const isReceiver = item.kind === 'receiver';
+        const marker = L.marker([item.latitude, item.longitude], {
+          icon: L.divIcon({
+            className: '',
+            html: '<div class="station-marker' + (isReceiver ? ' receiver' : '') + '"></div>',
+            iconSize: [24, 24],
+            iconAnchor: [12, 20]
+          })
+        }).addTo(markersLayer);
+        const popup = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = item.name || (isReceiver ? 'Mi ubicación' : 'Estación');
+        popup.appendChild(title);
+        const detail = document.createElement('div');
+        detail.textContent = item.municipality || '';
+        popup.appendChild(detail);
+        marker.bindPopup(popup);
+        bounds.push([item.latitude, item.longitude]);
+      });
+      if (bounds.length && signature !== previousMarkers) {
+        if (bounds.length === 1) map.setView(bounds[0], Math.max(map.getZoom(), 13));
+        else map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+      }
+      previousMarkers = signature;
+    };
+    window.invalidateSismoMap = function() {
+      const height = `${window.innerHeight}px`;
+      document.documentElement.style.height = height;
+      document.body.style.height = height;
+      document.getElementById('map').style.height = height;
+      map.invalidateSize({ pan: false });
+    };
+    window.addEventListener('resize', window.invalidateSismoMap);
+  </script>
+</body>
+</html>

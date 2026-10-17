@@ -14,6 +14,10 @@ import androidx.compose.ui.unit.sp
 import com.sismored.R
 import com.sismored.data.MeasurementPoint
 import com.sismored.data.SessionSummary
+import com.sismored.data.AccountProfile
+import com.sismored.data.StationRecord
+import com.sismored.data.StationStatus
+import com.sismored.data.CommunityAlert
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -31,7 +35,7 @@ internal val Poppins = FontFamily(
     Font(R.font.poppins_bold, FontWeight.Bold)
 )
 
-internal enum class AppScreen { HOME, MONITOR, HISTORY }
+internal enum class AppScreen { HOME, MONITOR, MAP, HISTORY }
 internal enum class CaptureMode { IDLE, CALIBRATING, RECORDING }
 
 internal data class RemoteReading(
@@ -43,14 +47,43 @@ internal data class RemoteReading(
     val updatedAtMs: Long
 )
 
+internal data class SensorCheckRow(
+    val name: String,
+    val purpose: String,
+    val available: Boolean,
+    val samples: Int = 0,
+    val reading: String = "",
+    val accuracy: String = "Sin reporte",
+    val result: String = ""
+)
+
 internal data class AppUiState(
     val screen: AppScreen = AppScreen.HOME,
+    val authReady: Boolean = false,
+    val authBusy: Boolean = false,
+    val account: AccountProfile? = null,
+    val station: StationRecord? = null,
+    val receiverLatitude: Double? = null,
+    val receiverLongitude: Double? = null,
+    val locationBusy: Boolean = false,
+    val communityAlerts: List<CommunityAlert> = emptyList(),
+    val registeredStations: List<StationRecord> = emptyList(),
+    val stationStatuses: List<StationStatus> = emptyList(),
+    val selectedStationId: String? = null,
+    val selectedStationMunicipality: String? = null,
     val capture: CaptureMode = CaptureMode.IDLE,
     val deviceName: String = "Teléfono Android",
     val batteryPercent: Int? = null,
     val hasAccelerometer: Boolean = false,
     val hasGyroscope: Boolean = false,
     val hasLinearSensor: Boolean = false,
+    val hasRotationVector: Boolean = false,
+    val hasMagnetometer: Boolean = false,
+    val hasGravitySensor: Boolean = false,
+    val sensorCheckRunning: Boolean = false,
+    val sensorCheckRemainingMs: Long = 0,
+    val sensorCheckPhase: String = "",
+    val sensorCheckRows: List<SensorCheckRow> = emptyList(),
     val calibrated: Boolean = false,
     val calibrationProgress: Float = 0f,
     val baseline: Float = 0f,
@@ -58,6 +91,12 @@ internal data class AppUiState(
     val x: Float = 0f,
     val y: Float = 0f,
     val z: Float = 0f,
+    val rotationX: Float = 0f,
+    val rotationY: Float = 0f,
+    val rotationZ: Float = 0f,
+    val gyroX: Float = 0f,
+    val gyroY: Float = 0f,
+    val gyroZ: Float = 0f,
     val amplitude: Float = 0f,
     val threshold: Float = 0f,
     val anomalyCount: Int = 0,
